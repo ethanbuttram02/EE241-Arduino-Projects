@@ -63,7 +63,7 @@ void loop() {
 }
 
 
-// State machine code for sequence detection by Ethan Buttram for EE241 at Cal Poly San Luis Obispo
+// State machine code for sequence detection and metal detection by Ethan Buttram for EE241 at Cal Poly San Luis Obispo
 // This FSM will carry to the next state if the desired key is pressed, otherwise it will start over at state 1: "FIRST"
 // Permission to use is granted, with credit in the comments
 
@@ -130,7 +130,6 @@ void seqDet(int key) {
 void turnOffEM(unsigned long timeStart) {
   timeStart = millis();                                         // Starting Millis() to void the first few values of the period. Initial testing showed that the values of period resulted in an exponential decay of values, some of which met the condition to turn off the EM
   int period = pulseIn(MD_PIN, HIGH) + pulseIn(MD_PIN, LOW);    // Sums time high and low to get the period of the wave
-  Serial.println(period);                                       // For debugging
   if (period >= 100 and timeStart > 200) {                      // Threshold values found from testing that will be shown when the metal detector has detected a metal object. These numbers will change based on environmental factors such as temperature.
     digitalWrite(EM_PIN, LOW);                                  // Turned off the Electromagnet
   }
