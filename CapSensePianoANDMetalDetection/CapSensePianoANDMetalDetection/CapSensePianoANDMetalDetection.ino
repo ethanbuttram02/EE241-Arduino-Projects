@@ -22,8 +22,7 @@
 #define PIANO_SIGNAL_PIN      9    // Pin that outputs the signal to the relay for EE241
 #define MD_PIN                8    // Pin that will read the frequency from the metal detector for EE241
 #define EM_PIN                10   // Pin that controls the electromagnet for EE241
-#define EM_THRESHOLD          3    // The amount of change in frequency when the metal ball drops in the metal detector for EE241
-#define MD_POWER              11   // Powers the Metal detector with arduino 5V pin
+#define MD_POWER              11   // Powers the Metal detector with arduino 5V
 
 // This macro creates a capacitance "key" sensor object for each key on the piano keyboard:
 #define CS(Y) CapacitiveSensor(2, Y)
@@ -69,7 +68,7 @@ void loop() {
 // Permission to use is granted, with credit in the comments
 
 void seqDet(int key) {
-  enum {FIRST, SECOND, THIRD, FOURTH, FIFTH, TURNOFFEM}; // Key sequence is 1-4-2-3-4
+  enum {FIRST, SECOND, THIRD, FOURTH, FIFTH}; // Key sequence is 1-4-2-3-4
   static int state = FIRST;
 
   switch (state) {
@@ -111,11 +110,12 @@ void seqDet(int key) {
 
     case FIFTH:
       if (key == 3) {       //reading for the 4th key and begins waiting for the Metal detector to detect metal and turn off the EM
-        digitalWrite(PIANO_SIGNAL_PIN, HIGH);       // Turns on the relay for the strobe light
-        unsigned static long tStart;                // Initializes tStart to be passed into turnOffEM() 
+        digitalWrite(PIANO_SIGNAL_PIN, LOW);       // Turns on the relay for the strobe light
+        digitalWrite(PIANO_SIGNAL_PIN, HIGH);
+        unsigned static long tStart;
         while (true) {                              // Infinite loop to repeatedly call the turnOffEM() so that metal detection is constant
           turnOffEM(tStart);                        // Calls turnOffEM() to begin reading for Metal Detection
-        }     
+        }
       }
       else {
         state = FIRST;
@@ -131,11 +131,8 @@ void turnOffEM(unsigned long timeStart) {
   timeStart = millis();                                         // Starting Millis() to void the first few values of the period. Initial testing showed that the values of period resulted in an exponential decay of values, some of which met the condition to turn off the EM
   int period = pulseIn(MD_PIN, HIGH) + pulseIn(MD_PIN, LOW);    // Sums time high and low to get the period of the wave
   Serial.println(period);                                       // For debugging
-  if (period >= 79 and period <= 90 and timeStart > 200) {      // The range of acceptable values found from testing that will be shown when the metal detector has detected a metal object
+  if (period >= 100 and timeStart > 200) {                      // Threshold values found from testing that will be shown when the metal detector has detected a metal object. These numbers will change based on environmental factors such as temperature.
     digitalWrite(EM_PIN, LOW);                                  // Turned off the Electromagnet
   }
-  else {
-    digitalWrite(EM_PIN, HIGH);                                 // Mainly for testing, this allowed testing for meeting the condition after 200ms
-  }
-  delay(25);                                                    // Delay 25ms for stability, also means that the condition will not be met for approx the first 8 values of period.
+  delay(5);                                                     // Delay for stability, also means that the condition will not be met for approx the first 8 values of period.
 }
