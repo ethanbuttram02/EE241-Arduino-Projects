@@ -110,8 +110,7 @@ void seqDet(int key) {
 
     case FIFTH:
       if (key == 3) {       //reading for the 4th key and begins waiting for the Metal detector to detect metal and turn off the EM
-        digitalWrite(PIANO_SIGNAL_PIN, LOW);       // Turns on the relay for the strobe light
-        digitalWrite(PIANO_SIGNAL_PIN, HIGH);
+        digitalWrite(PIANO_SIGNAL_PIN, HIGH);       // turns on relay for strobe light
         unsigned static long tStart;
         while (true) {                              // Infinite loop to repeatedly call the turnOffEM() so that metal detection is constant
           turnOffEM(tStart);                        // Calls turnOffEM() to begin reading for Metal Detection
